@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/jee 
+http://www.springframework.org/schema/jee/spring-jee.xsd 	
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<!-- C'est pour préciser que fr.cinepantin.controller acceuillera l'annotation 
+		controller -->
+	<context:component-scan base-package="fr.cinepantin.controller"></context:component-scan>
+	
+	<mvc:annotation-driven />
+	
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		id="viewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+	<bean id="articleService" class="fr.cinepantin.service.impl.ArticleServiceImpl"></bean>
+	<bean id="articleDao" class="fr.cinepantin.dao.impl.ArticleDaoImpl"></bean>
+
+<!-- Spring s'adresse au conteneur JPA de Glassfish. Le fichier persistence.xml situé dans META-INF du classpath est utilisé -->
+
+
+<jee:jndi-lookup id="entityManagerFactory" jndi-name="persistence/CinePant1"/>
+
+<!-- Pour que spring sache géréer les transactions, les transactions seront gérées par JTA, implémenté dans Glassfish -->
+
+
+<bean class="org.springframework.transaction.jta.JtaTransactionManager" id="transactionManager"> </bean>
+<!-- 	Permet de mapper le repertoire resources pour que les ressources soit prises en compte -->
+	<mvc:resources location="/WEB-INF/resources/" mapping="/resources/**"/>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+</beans>
